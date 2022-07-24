@@ -22,6 +22,7 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
     USERS_COMMENT_INVALID_ID(false, 2004, "댓글 작성 권한이 없습니다."),
+    COMMENT_INVALID(false, 2005,"유효하지 않는 댓글입니다."),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력하세요."),
@@ -61,10 +62,12 @@ public enum BaseResponseStatus {
     DELETE_FAIL_COMMENT(false, 4003, "댓글 삭제를 실패하였습니다. "),
 
     CREATE_FAIL_COMMENT(false, 4010, "댓글 생성을 실패하였습니다. "),
+    CREATE_FAIL_RECOMMENT(false, 4009, "대댓글 생성을 실패하였습니다. "),
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
+    UPDATE_FAIL_COMMENT(false, 4013,"댓글 수정에 실패하였습니다.");
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요

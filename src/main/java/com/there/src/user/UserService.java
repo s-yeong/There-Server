@@ -63,6 +63,11 @@ public class UserService {
         if (userProvider.checkEmail(postJoinReq.getEmail()) == 1) {
             throw new BaseException(DUPLICATED_EMAIL);
         }
+        // 입력 비밀번호 일치 여부 확인
+        if (postJoinReq.getPassword().equals(postJoinReq.getCheckpwd()) ==false){
+            throw new BaseException(DUPLICATED_PWD);
+
+        }
             // 암호화
             String password;
             try {

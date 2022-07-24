@@ -107,7 +107,11 @@ public class UserDao {
                 int.class,
                 checkUserExistParams);
     }
+    /*//입력 비밀번호 일치 여부 확인
+    public int checkPwdExist(String checkPwd) {
 
+    }
+*/
     public int checkJwt(int userIdx) {
         String checkJwtQuery = "select exist(select userIdx from User where userIdx =?)";
         int checkJwtParams = userIdx;
