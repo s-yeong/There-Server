@@ -35,7 +35,7 @@ public class HistoryDao {
                 "    WHEN '7' THEN '(토)'\n" +
                 "    END AS dayOfWeek\n" +
                 "from History as h\n" +
-                "where h.historyIdx = ?;";
+                "where h.historyIdx = ? and h.status = 'ACTIVE';";
         int selectHistoryParam = historyIdx;
         return this.jdbcTemplate.queryForObject(selectHistoryQuery,
                 (rs, rowNum) -> new GetHistoryRes(
@@ -91,16 +91,6 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
     }
 
-    // 히스토리 작성 API - 히스토리 이미지 작성 함수
-    public int insertHistoryPicture(int historyIdx, PostHistoryPicturesReq postHistoryPicturesReq){
-        String insertHistoryPicturesQuery = "insert into historyPicture(historyIdx, imgUrl) VALUES (?,?);";
-        Object []insertHistoryPicturesParams = new Object[] {historyIdx, postHistoryPicturesReq.getImgUrl()};
-        this.jdbcTemplate.update(insertHistoryPicturesQuery,
-                insertHistoryPicturesParams);
-
-        String lastInsertIdxQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
-    }
 
     // 히스토리 삭제 함수
     public int deleteHistory(int historyIdx){
@@ -115,7 +105,7 @@ public class HistoryDao {
     public GetHistoryScreenRes selectModifyHistory(int historyIdx){
         String selectModifyHistoryQuery = "select h.historyIdx, h.title, h.content\n" +
                 "from History as h\n" +
-                "where h.historyIdx = ?;";
+                "where h.historyIdx = ? and h.status = 'ACTIVE';";
         int selectModifyHistoryParam = historyIdx;
         return this.jdbcTemplate.queryForObject(selectModifyHistoryQuery,
                 (rs, rowNum) -> new GetHistoryScreenRes(
@@ -141,27 +131,6 @@ public class HistoryDao {
                 updateHistoryParams);
 
     }
-
-    // 히스토리 수정 API - 히스토리 이미지 삭제 함수
-    public int deleteHistoryPictures(int historyIdx){
-        String deleteHistoryPicturesQuery = "delete from historyPicture where historyIdx = ?;";
-        Object []deleteHistoryPicturesParams = new Object[] {historyIdx};
-        return this.jdbcTemplate.update(deleteHistoryPicturesQuery,
-                deleteHistoryPicturesParams);
-
-    }
-
-    // 히스토리 수정 API - 히스토리 이미지 작성 함수
-    public int updateHistoryPicture(int historyIdx, PatchHistoryPicturesReq patchHistoryPicturesReq){
-        String insertHistoryPicturesQuery = "insert into historyPicture(historyIdx, imgUrl) VALUES (?,?);";
-        Object []insertHistoryPicturesParams = new Object[] {historyIdx, patchHistoryPicturesReq.getImgUrl()};
-        this.jdbcTemplate.update(insertHistoryPicturesQuery,
-                insertHistoryPicturesParams);
-
-        String lastInsertIdxQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
-    }
-
 
     // 유저 체크 함수
     public int checkUserExist(int userIdx){
