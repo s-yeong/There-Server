@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PatchPostsReq {
 
-    private String ImgUrl;
+    private String imgUrl;
     private String content;
+    private String [] hashtag = null;
 
 }

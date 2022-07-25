@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,11 +34,27 @@ public class PostService {
     /**
      * 게시글 생성
      */
+    @Transactional(rollbackFor = Exception.class)
     public PostPostsRes createPosts(int userIdx, PostPostsReq postPostsReq) throws BaseException {
         try {
             int postIdx = postDao.createPosts(userIdx, postPostsReq);
+
+            // 해시태그 생성
+            if(postPostsReq.getHashtag()!=null) {
+                for (String hashtag : postPostsReq.getHashtag()) {
+                    int tagIdx = postDao.checkTagName(hashtag);
+
+                    if (tagIdx == 0) {
+                        postDao.insertTag(postIdx, hashtag);
+                    } else {
+                        postDao.insertIsTag(postIdx, tagIdx);
+                    }
+                }
+            }
+
             return new PostPostsRes(postIdx);
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
@@ -47,19 +64,44 @@ public class PostService {
      *  ImgUrl, Content 수정
      *  ImgUrl 수정
      *  Content 수정
+     *  + 해시태그 수정
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updatePosts(int postIdx, PatchPostsReq patchPostsReq) throws BaseException {
         int result = 0;
 
         try {
-            if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null) {
+            if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null){
                 result = postDao.updatePosts(postIdx, patchPostsReq);
+            }
+            else if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null) {
+                result = postDao.updatepostsImgUrlContent(postIdx, patchPostsReq);
             }
             else if (patchPostsReq.getImgUrl() != null) {
                 result = postDao.updatepostsImgUrl(postIdx, patchPostsReq);
             }
             else if (patchPostsReq.getContent() != null) {
                 result = postDao.updatepostsContent(postIdx, patchPostsReq);
+            }
+
+            // 해시태그 수정
+            if(patchPostsReq.getHashtag()!=null) {
+
+                // 해시태그 삭제
+                for (int i = 0; i < patchPostsReq.getHashtag().length; i ++){
+                    postDao.deleteTag(postIdx);
+                }
+
+                // 해시태그 생성
+                for (String hashtag : patchPostsReq.getHashtag()) {
+                    int tagIdx = postDao.checkTagName(hashtag);
+
+                    if (tagIdx == 0) {
+                        postDao.insertTag(postIdx, hashtag);
+                    } else {
+                        postDao.insertIsTag(postIdx, tagIdx);
+                    }
+                }
             }
 
             if (result == 0) throw new BaseException(UPDATE_FAIL_POST); // 삭제 확인 (0 : 실패 / 1 : 성공)
